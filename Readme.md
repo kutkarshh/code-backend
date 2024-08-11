@@ -2,7 +2,7 @@
 
 # Channel Name - Chai aur Code
 
-# Video Name - Complete Backend Developer course | Part 1
+## Video Name - Complete Backend Developer course | Part 1
 
 - [Video Link](https://www.youtube.com/watch?v=7fjOw8ApZ1I)
 
