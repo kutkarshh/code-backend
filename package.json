@@ -1,0 +1,11 @@
+{
+  "name": "code-backend",
+  "version": "1.0.0",
+  "description": "it's a backend code based on the youtube video complete backened developer course part 1 & 2 which creates a Full advanced professional backend.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Utkarsh Kumar",
+  "license": "ISC"
+}
