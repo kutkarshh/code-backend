@@ -1,12 +1,10 @@
 // require("dotenv").config({path:'./.env'});
 // import dotenv from 'dotenv/config';
 import dotenv from 'dotenv';
+dotenv.config();
 import { app } from './app.js';
 import connectDB from './db/index.js';
 
-dotenv.config(
-    { path: './.env' }
-);
 
 // Start the server only after the database connection is established
 connectDB().then(() => {

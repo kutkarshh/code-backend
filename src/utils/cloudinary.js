@@ -1,4 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
+import dotenv from 'dotenv';
+import fs from 'fs';
+dotenv.config();
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -6,20 +9,29 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (localFilePath, publicId) => {
     try {
         if (!localFilePath) return null;
+
         // Uploading File on Cloudinary
-        const result = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
-        })
+        // Set folder name in publicId
+        const folderName = 'YTClone';
+        const fullPublicId = `${folderName}/${publicId}`;
+
+        const uploadResponse = await cloudinary.uploader.upload(localFilePath, {
+            public_id: fullPublicId,  // Include folder name in public ID
+            overwrite: true,          // Overwrite the file if it already exists
+        });
+
+        // Remove the file from local storage
+        fs.unlinkSync(localFilePath);
+
         // On File Successfully got uploaded on the cloudinary server
-        console.log("File Uploaded Successfully on Cloudinary", result.url);
-        return result;
+        console.log("File Uploaded Successfully on Cloudinary", uploadResponse.url);
+        return uploadResponse;
     } catch (error) {
-        FileSystem.unlinkSync(localFilePath);
-        // Removes the temperory file stored on the local file system
-        // as the Upload operation failed
+        console.log(error);
+        fs.unlinkSync(localFilePath); // Removes the temporary file stored on the local file system
     }
 }
 
