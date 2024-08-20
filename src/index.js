@@ -1,14 +1,27 @@
 // require("dotenv").config({path:'./.env'});
 // import dotenv from 'dotenv/config';
-import connectDB from './db/index.js';
-
 import dotenv from 'dotenv';
+import { app } from './app.js';
+import connectDB from './db/index.js';
 
 dotenv.config(
     { path: './.env' }
 );
 
-connectDB()
+// Start the server only after the database connection is established
+connectDB().then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(process.env.PORT || 3000, () => {
+        console.log(`Server is running on port ${process.env.PORT}`);
+    })
+    app.on("error", (error) => {
+        console.error("Failed to connect to MongoDB", error);
+        throw error;
+    })
+}).catch(error => {
+    console.error("Failed to connect to MongoDB", error);
+    process.exit(1);
+})
 
 /*
 (async () => {
