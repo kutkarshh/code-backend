@@ -1,16 +1,16 @@
-const asyncDBHandler = (requestHandler) => {
+const asyncHandler = (requestHandler) => {
     return (req, res, next) => {
         Promise.resolve(requestHandler(req, res, next)).catch((error) => next(error))
     }
 }
 
-export { asyncDBHandler }
+export { asyncHandler }
 
-// const asyncDBHandler = () => {}
-// const asyncDBHandler = (func) => () =>{}
-// const asyncDBHandler = (func) => async () =>{}
+// const asyncHandler = () => {}
+// const asyncHandler = (func) => () =>{}
+// const asyncHandler = (func) => async () =>{}
 
-/* const asyncDBHandler = (fn) => async (req, res, next) => {
+/* const asyncHandler = (fn) => async (req, res, next) => {
     try {
 
     } catch (error) {
