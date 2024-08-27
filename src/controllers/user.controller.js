@@ -4,7 +4,7 @@ import { User } from '../models/user.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { deleteOnCloudinary, uploadOnCloudinary } from '../utils/cloudinary.js';
 
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
@@ -133,8 +133,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1,  // this remove the field from the document
             }
         },
         {
@@ -202,7 +202,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     if (!(newPassword === confirmPassword))
         throw new ApiError(400, "Passwords don't match");
 
-    const user = User.findById(req.user?._id);
+    const user = await User.findById(req.user?._id);
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
     if (!isPasswordCorrect) throw new ApiError(400, "Old password is incorrect");
     user.password = newPassword;
@@ -246,16 +246,18 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     // delete old avatar from cloudinary server
     await deleteOnCloudinary(path.basename(req.user?.avatar));
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const avatarFileName = path.basename(avatarLocalPath).split('.')[0]; // Use original filename
+    // console.log(avatarLocalPath, avatarFileName);
+    const avatarUpload = await uploadOnCloudinary(avatarLocalPath, avatarFileName);
 
-    if (!avatar.url) throw new ApiError(500, "Failed to upload avatar");
+    if (!avatarUpload.url) throw new ApiError(500, "Failed to upload avatar");
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set:
             {
-                avatar: avatar.url
+                avatar: avatarUpload.url
             }
         },
         { new: true })
@@ -272,7 +274,11 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     if (!coverImageLocalPath)
         throw new ApiError(400, "Please provide Cover image");
 
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+    // delete old avatar from cloudinary server
+    await deleteOnCloudinary(path.basename(req.user?.coverImage));
+
+    const coverImageFileName = path.basename(coverImageLocalPath).split('.')[0]; // Use original filename
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath, coverImageFileName);
 
     if (!coverImage.url) throw new ApiError(500, "Failed to upload Cover image");
 
