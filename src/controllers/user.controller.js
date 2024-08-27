@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { mongoose } from 'mongoose';
 import path from 'path';
 import { User } from '../models/user.model.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -372,7 +373,7 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
     if (!userId)
         throw new ApiError(400, "User not logged in");
 
-    const user = User.aggregate([{
+    const user = await User.aggregate([{
         $match: {
             _id: new mongoose.Types.ObjectId(userId),
         }
@@ -414,7 +415,7 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, user[0].watchHistory, "Watch History fetched successfully"));
+        .json(new ApiResponse(200, user[0]?.watchHistory, "Watch History fetched successfully"));
 })
 
 export {
