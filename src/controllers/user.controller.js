@@ -292,7 +292,6 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, user, "Cover image updated successfully"));
 })
 
-
 // Get subscribers and subscribedTo count of a user
 
 const getSubscribeData = asyncHandler(async (req, res) => {
